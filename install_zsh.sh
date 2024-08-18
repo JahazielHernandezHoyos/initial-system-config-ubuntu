@@ -22,9 +22,6 @@ sudo apt update && sudo apt install -y \
 # Instalar Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-# Cambiar la shell por defecto a zsh
-chsh -s $(which zsh)
-
 # Instalar Powerlevel10k (un tema popular para Zsh)
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
@@ -89,6 +86,8 @@ fgaa() {
 }
 EOL
 
+# Cambiar la shell por defecto a zsh
+chsh -s $(which zsh)
 # Recargar la configuración de Zsh
 source ~/.zshrc
 
