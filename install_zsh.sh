@@ -15,11 +15,12 @@ sudo apt install -y \
     curl \
     wget \
     build-essential \
-    htop \
+    btop \ 
     tree \
     fzf \
     bat \
-    exa || handle_error "No se pudieron instalar algunas dependencias."
+    eza \ 
+    lsd || handle_error "No se pudieron instalar algunas dependencias."
 
 # Verificar si el directorio de Oh My Zsh ya existe
 if [ -d "$HOME/.oh-my-zsh" ]; then
@@ -50,9 +51,9 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(git docker docker-compose zsh-autosuggestions zsh-syntax-highlighting zsh-completions alias-tips)
 
 # Alias útiles
-alias ll='exa -lh --git'
-alias la='exa -a --git'
-alias ls='exa --git'
+alias ll='eza -lh --git' 
+alias la='eza -a --git'
+alias ls='eza --git'
 alias cat='bat'
 alias ..="cd .."
 alias ...="cd ../.."
