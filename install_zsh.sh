@@ -1,7 +1,15 @@
 #!/bin/bash
 
+# Función para manejar errores
+handle_error() {
+    echo "Error: $1"
+    exit 1
+}
+
 # Actualizar e instalar dependencias necesarias
-sudo apt update && sudo apt install -y \
+echo "Actualizando el sistema e instalando dependencias..."
+sudo apt update || handle_error "No se pudo actualizar el sistema."
+sudo apt install -y \
     zsh \
     git \
     curl \
@@ -11,19 +19,28 @@ sudo apt update && sudo apt install -y \
     tree \
     fzf \
     bat \
-    exa \
-    tig \
-    git-lfs \
-    delta \
-    git-extras
+    exa || handle_error "No se pudieron instalar algunas dependencias."
 
-# Instalar Oh My Zsh sin interacción
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+# Verificar si el directorio de Oh My Zsh ya existe
+if [ -d "$HOME/.oh-my-zsh" ]; then
+    echo "El directorio $HOME/.oh-my-zsh ya existe. Si deseas reinstalar, elimínalo primero."
+else
+    # Instalar Oh My Zsh sin interacción
+    echo "Instalando Oh My Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || handle_error "No se pudo instalar Oh My Zsh."
+fi
 
-# Instalar Powerlevel10k (un tema popular para Zsh)
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+# Verificar si el tema Powerlevel10k ya está instalado
+if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+    # Instalar Powerlevel10k (un tema popular para Zsh)
+    echo "Instalando Powerlevel10k..."
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k || handle_error "No se pudo clonar Powerlevel10k."
+else
+    echo "El tema Powerlevel10k ya está instalado."
+fi
 
 # Crear un archivo .zshrc predeterminado
+echo "Configurando .zshrc..."
 cat <<EOL > ~/.zshrc
 # Configuración de Zsh
 ZSH="\$HOME/.oh-my-zsh"
@@ -78,7 +95,7 @@ fgaa() {
 EOL
 
 # Cambiar la shell por defecto a zsh
-chsh -s $(which zsh)
+chsh -s $(which zsh) || handle_error "No se pudo cambiar la shell por defecto a zsh."
 
 # Recargar la configuración de Zsh
 source ~/.zshrc
