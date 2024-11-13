@@ -40,6 +40,26 @@ else
     echo "El tema Powerlevel10k ya está instalado."
 fi
 
+# Instalar los plugins de Zsh necesarios si no existen
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+PLUGINS_DIR="$ZSH_CUSTOM/plugins"
+
+install_plugin() {
+    local plugin_name=$1
+    local plugin_repo=$2
+    if [ ! -d "$PLUGINS_DIR/$plugin_name" ]; then
+        echo "Instalando plugin $plugin_name..."
+        git clone "$plugin_repo" "$PLUGINS_DIR/$plugin_name" || handle_error "No se pudo clonar el plugin $plugin_name."
+    else
+        echo "El plugin $plugin_name ya está instalado."
+    fi
+}
+
+install_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git"
+install_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+install_plugin "zsh-completions" "https://github.com/zsh-users/zsh-completions.git"
+install_plugin "alias-tips" "https://github.com/djui/alias-tips.git"
+
 # Crear un archivo .zshrc predeterminado
 echo "Configurando .zshrc..."
 cat <<EOL > ~/.zshrc
@@ -49,6 +69,9 @@ ZSH="\$HOME/.oh-my-zsh"
 
 # Set name of the theme to load
 ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# Configurar Powerlevel10k para suprimir advertencia de instant prompt
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -126,6 +149,12 @@ EOL
 
 # Cambiar la shell por defecto a zsh
 chsh -s $(which zsh) || handle_error "No se pudo cambiar la shell por defecto a zsh."
+
+# Agregar zsh al final de .bashrc para que se ejecute al abrir cualquier terminal
+if ! grep -q "exec zsh" ~/.bashrc; then
+    echo "Agregando Zsh al final de .bashrc para abrirlo por defecto..."
+    echo "exec zsh" >> ~/.bashrc
+fi
 
 # Informar al usuario que necesita reiniciar la terminal para aplicar los cambios
 echo "Instalación completada. Reinicia tu terminal para ver los cambios."
